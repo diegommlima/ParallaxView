@@ -15,7 +15,7 @@
 	self = [super initWithFrame:frame];
 	if (self) {
 		// Initialization code
-				
+		
 		self.backgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, frame.size.width, frame.size.height)];
 		self.backgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		[self addSubview:self.backgroundImageView];
@@ -47,7 +47,7 @@
 
 - (CGFloat)imageOverflowWidth {
 	
-	return 40.0f;
+	return 120.0f;
 }
 
 @end

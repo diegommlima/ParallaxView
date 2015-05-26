@@ -43,7 +43,7 @@
 	return self.arrayPhotos.count;
 }
 
-- (UIView *)parallaxView:(ParallaxView *)parallaxView pageViewForindex:(NSUInteger)index {
+- (UIView<ParallaxItemViewProtocol> *)parallaxView:(ParallaxView *)parallaxView pageViewForindex:(NSUInteger)index {
 	
 	NSString *item = self.arrayPhotos[index];
 

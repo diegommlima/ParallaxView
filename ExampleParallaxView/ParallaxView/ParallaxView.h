@@ -29,7 +29,7 @@
 
 @optional
 
-- (UIView *)parallaxView:(ParallaxView *)parallaxView pageViewForindex:(NSUInteger)index;
+- (UIView<ParallaxItemViewProtocol> *)parallaxView:(ParallaxView *)parallaxView pageViewForindex:(NSUInteger)index;
 
 - (void)didFinishParallax:(ParallaxView *)parallaxView;
 - (void)didStartParallax:(ParallaxView *)parallaxView;

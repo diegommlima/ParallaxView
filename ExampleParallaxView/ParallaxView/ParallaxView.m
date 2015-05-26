@@ -54,6 +54,8 @@
 	self.parallaxScrollView.backgroundColor = [UIColor clearColor];
 	self.parallaxScrollView.showsHorizontalScrollIndicator = NO;
 	[self addSubview:self.parallaxScrollView];
+	
+	self.currentPage = INT_MAX;
 }
 
 -(void)layoutSubviews {
@@ -107,7 +109,7 @@
 {
 	for (UIView<ParallaxItemViewProtocol> *page in _visiblePages)
 	{
-		if (page.index == [self indexOfSelectedPage])
+		if (page.index == self.currentPage)
 			return page;
 	}
 	return nil;
@@ -124,11 +126,13 @@
 
 - (void)setCurrentPage:(NSInteger)currentPage {
  
+	if (currentPage == _currentPage)
+		return;
+	
 	_currentPage = currentPage;
 	
 	if (self.delegate && [self.delegate respondsToSelector:@selector(parallaxView:didChangeToPage:)])
 		[self.delegate parallaxView:self didChangeToPage:_currentPage];
-	
 }
 
 #pragma mark - Private Methods
@@ -145,8 +149,8 @@
 	CGFloat minX = newOffset.x;
 	CGFloat maxX = newOffset.x + pageWidth - 1.0;
 	
-	NSUInteger firstNeededPageIndex = MAX(minX / pageWidth, 0);
-	NSUInteger lastNeededPageIndex = MIN(maxX / pageWidth, (NSInteger)[self numberOfPages] - 1);
+	NSUInteger firstNeededPageIndex = MAX((minX / pageWidth) - 1, 0);
+	NSUInteger lastNeededPageIndex = MIN((maxX / pageWidth) + 1, (NSInteger)[self numberOfPages] - 1);
 	
 	for (UIView <ParallaxItemViewProtocol> *page in self.visiblePages)
 	{
@@ -163,8 +167,9 @@
 	{
 		if (![self _isDisplayingPageForIndex:i])
 		{
-			UIView *pageView = [self.delegate parallaxView:self pageViewForindex:i];
+			UIView<ParallaxItemViewProtocol> *pageView = [self.delegate parallaxView:self pageViewForindex:i];
 			pageView.frame = [self _frameForPageAtIndex:i];
+			pageView.clipsToBounds = YES;
 			[self.parallaxScrollView addSubview:pageView];
 			
 			[self.visiblePages addObject:pageView];
@@ -189,28 +194,38 @@
 	return rect;
 }
 
+- (void)_updateImageViewPageOffset:(UIView<ParallaxItemViewProtocol> *)pageView {
+	
+	UIImageView *backgroundView = pageView.backgroundImageView;
+	CGRect imgRect = backgroundView.frame;
+	
+	if (self.parallaxScrollView.contentOffset.x < 0) {
+		pageView.clipsToBounds = NO;
+		imgRect.origin.x = self.parallaxScrollView.contentOffset.x ;
+	}
+	else if (self.parallaxScrollView.contentOffset.x > (self.parallaxScrollView.contentSize.width - self.frame.size.width)){
+		
+		pageView.clipsToBounds = NO;
+		imgRect.origin.x = self.parallaxScrollView.contentOffset.x  - (self.parallaxScrollView.contentSize.width - self.frame.size.width) ;
+	}
+	else {
+		
+		pageView.clipsToBounds = YES;
+		CGFloat pageOffset = self.parallaxScrollView.contentOffset.x - CGRectGetMinX(pageView.frame);
+		CGFloat percent = ((pageOffset*1)/self.frame.size.width);
+		imgRect.origin.x = [pageView imageOverflowWidth]* percent;
+	}
+	backgroundView.frame = imgRect;
+}
+
 #pragma mark - UIScrollViewDelegate Methods
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	
 	[self _tilePagesAtPoint:scrollView.contentOffset];
 	
-	NSLog(@"content:%f contentTotal:%f", scrollView.contentOffset.x, (scrollView.contentSize.width - self.frame.size.width));
-	
-	if (scrollView.contentOffset.x < 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - self.frame.size.width)) {
-		
-		UIImageView *backgroundView = [self selectedPage].backgroundImageView;
-		CGRect imgRect = backgroundView.frame;
-		
-		if (scrollView.contentOffset.x < 0) {
-			
-			imgRect.origin.x = scrollView.contentOffset.x ;
-		}
-		else {
-			
-			imgRect.origin.x = scrollView.contentOffset.x  - (scrollView.contentSize.width - self.frame.size.width) ;
-		}
-		backgroundView.frame = imgRect;
+	for (UIView<ParallaxItemViewProtocol> *page in self.visiblePages) {
+		[self _updateImageViewPageOffset:page];
 	}
 }
 
@@ -223,10 +238,15 @@
 
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
 	
-	self.currentPage = (NSInteger)(scrollView.contentOffset.x / scrollView.frame.size.width);
+	self.currentPage = [self indexOfSelectedPage];
 	
 	if(self.delegate && [self.delegate respondsToSelector:@selector(didFinishParallax:)])
 		[self.delegate didFinishParallax:self];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+	
+	self.currentPage = [self indexOfSelectedPage];
 }
 
 @end
