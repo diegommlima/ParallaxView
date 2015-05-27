@@ -18,6 +18,7 @@
 		
 		self.backgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, frame.size.width, frame.size.height)];
 		self.backgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		self.backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
 		[self addSubview:self.backgroundImageView];
 		
 		self.titleLabel = [[UILabel alloc] init];

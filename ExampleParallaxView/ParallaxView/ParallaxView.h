@@ -34,7 +34,6 @@
 - (void)didFinishParallax:(ParallaxView *)parallaxView;
 - (void)didStartParallax:(ParallaxView *)parallaxView;
 - (void)parallaxView:(ParallaxView *)parallax didChangeToPage:(NSInteger)pageIndex;
-//- (void)changePageByControlPages;
 
 @end
 

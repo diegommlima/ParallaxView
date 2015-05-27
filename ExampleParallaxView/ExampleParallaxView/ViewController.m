@@ -13,7 +13,6 @@
 @interface ViewController () <ParallaxViewDelegate>
 
 @property (nonatomic, strong) ParallaxView *parallaxView;
-
 @property (nonatomic, strong) NSArray *arrayPhotos;
 
 @end
@@ -34,6 +33,17 @@
 	self.arrayPhotos = @[@"image1.jpg", @"image2.jpg", @"image3.jpg", @"image4.jpg", @"image5.jpg"];
 	[self.parallaxView reloadData];
 	[self.parallaxView selectPageAtIndex:3 animated:NO];
+	
+	UITapGestureRecognizer *singleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizer:)];
+	singleTapGesture.numberOfTapsRequired = 1;
+	singleTapGesture.numberOfTouchesRequired = 1;
+	[self.parallaxView addGestureRecognizer:singleTapGesture];
+}
+
+- (void)tapGestureRecognizer:(UITapGestureRecognizer *)tapGesture {
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:![UIApplication sharedApplication].statusBarHidden withAnimation:UIStatusBarAnimationFade];
+	[self.navigationController setNavigationBarHidden:!self.navigationController.navigationBarHidden animated:YES];
 }
 
 #pragma mark - ParallaxViewDelegate

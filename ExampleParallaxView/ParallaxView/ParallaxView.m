@@ -26,55 +26,38 @@
 	if (self) {
 		// Initialization code
 		
-		self.frame = frame;
-		[self _performInit];
+		self.backgroundColor = [UIColor grayColor];
+		
+		self.recycledPages = [[NSMutableSet alloc] init];
+		self.visiblePages  = [[NSMutableSet alloc] init];
+		
+		self.parallaxScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.frame.size.width, self.frame.size.height)];
+		self.parallaxScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		self.parallaxScrollView.pagingEnabled = YES;
+		self.parallaxScrollView.delegate = self;
+		self.parallaxScrollView.backgroundColor = [UIColor clearColor];
+		self.parallaxScrollView.showsHorizontalScrollIndicator = NO;
+		[self addSubview:self.parallaxScrollView];
+		
+		self.currentPage = INT_MAX;
 	}
 	return self;
-}
-
-- (instancetype)init
-{
-	self = [super init];
-	if (self) {
-		[self _performInit];
-	}
-	return self;
-}
-
-- (void)_performInit {
-	
-	self.backgroundColor = [UIColor grayColor];
-	
-	self.recycledPages = [[NSMutableSet alloc] init];
-	self.visiblePages  = [[NSMutableSet alloc] init];
-	
-	self.parallaxScrollView = [[UIScrollView alloc] init];
-	self.parallaxScrollView.pagingEnabled = YES;
-	self.parallaxScrollView.delegate = self;
-	self.parallaxScrollView.backgroundColor = [UIColor clearColor];
-	self.parallaxScrollView.showsHorizontalScrollIndicator = NO;
-	[self addSubview:self.parallaxScrollView];
-	
-	self.currentPage = INT_MAX;
 }
 
 -(void)layoutSubviews {
 	
 	[super layoutSubviews];
-	
-	self.parallaxScrollView.frame = CGRectMake(0.0f, 0.0f, self.frame.size.width, self.frame.size.height);
+
 	self.parallaxScrollView.contentSize = [self _contentSizeForPagingScrollView];
+	[self _reorganizeViews];
 }
 
 - (void)selectPageAtIndex:(NSInteger)index animated:(BOOL)animated{
 	
+	self.currentPage = index;
 	CGPoint newContentOffset = CGPointMake(self.bounds.size.width * index, 0);
 	[self _tilePagesAtPoint:newContentOffset];
-
-	[UIView animateWithDuration:animated ? 0.3f : 0.0f
-					 animations:^{
-						 self.parallaxScrollView.contentOffset = newContentOffset;
-					 }];
+	[self.parallaxScrollView setContentOffset:newContentOffset animated:animated];
 }
 
 - (void)reloadData {
@@ -107,7 +90,7 @@
 
 - (UIView<ParallaxItemViewProtocol> *)selectedPage
 {
-	for (UIView<ParallaxItemViewProtocol> *page in _visiblePages)
+	for (UIView<ParallaxItemViewProtocol> *page in self.visiblePages)
 	{
 		if (page.index == self.currentPage)
 			return page;
@@ -136,6 +119,17 @@
 }
 
 #pragma mark - Private Methods
+
+- (void)_reorganizeViews {
+	
+	[self selectPageAtIndex:self.currentPage animated:YES];
+	
+	for (UIView<ParallaxItemViewProtocol> *page in self.visiblePages) {
+		
+		page.frame = [self _frameForPageAtIndex:page.index];
+		[self _updateImageViewPageOffset:page];
+	}
+}
 
 - (CGSize)_contentSizeForPagingScrollView {
 	
@@ -215,6 +209,7 @@
 		CGFloat percent = ((pageOffset*1)/self.frame.size.width);
 		imgRect.origin.x = [pageView imageOverflowWidth]* percent;
 	}
+	
 	backgroundView.frame = imgRect;
 }
 
