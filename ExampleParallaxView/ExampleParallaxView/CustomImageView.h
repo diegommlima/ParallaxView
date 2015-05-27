@@ -12,7 +12,7 @@
 @interface CustomImageView : UIView <ParallaxItemViewProtocol>
 
 @property (nonatomic, assign) NSInteger index;
-@property (nonatomic, strong) UIImageView *backgroundImageView;
+@property (nonatomic, strong) UIImageView *bgView;
 
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *descriptionLabel;

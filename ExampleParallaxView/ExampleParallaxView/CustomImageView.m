@@ -16,10 +16,10 @@
 	if (self) {
 		// Initialization code
 		
-		self.backgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, frame.size.width, frame.size.height)];
-		self.backgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		self.backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-		[self addSubview:self.backgroundImageView];
+		self.bgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, frame.size.width, frame.size.height)];
+		self.bgView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+		self.bgView.contentMode = UIViewContentModeScaleAspectFill;
+		[self addSubview:self.bgView];
 		
 		self.titleLabel = [[UILabel alloc] init];
 		self.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:28.0f];
@@ -46,7 +46,7 @@
 	[self.descriptionLabel sizeToFit];
 }
 
-- (CGFloat)imageParallaxVelocity {
+- (CGFloat)parallaxVelocity {
 	
 	return 0.25f;
 }

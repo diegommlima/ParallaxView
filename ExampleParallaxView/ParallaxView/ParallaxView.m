@@ -190,7 +190,7 @@
 
 - (void)_updateImageViewPageOffset:(UIView<ParallaxItemViewProtocol> *)pageView {
 	
-	UIImageView *backgroundView = pageView.backgroundImageView;
+	UIView *backgroundView = pageView.bgView;
 	CGRect imgRect = backgroundView.frame;
 	
 	if (self.parallaxScrollView.contentOffset.x < 0) {
@@ -207,7 +207,7 @@
 		pageView.clipsToBounds = YES;
 		CGFloat pageOffset = self.parallaxScrollView.contentOffset.x - CGRectGetMinX(pageView.frame);
 		CGFloat percent = ((pageOffset*1)/self.frame.size.width);
-		imgRect.origin.x = (self.frame.size.width*[pageView imageParallaxVelocity]) * percent;
+		imgRect.origin.x = (self.frame.size.width*[pageView parallaxVelocity]) * percent;
 	}
 	
 	backgroundView.frame = imgRect;

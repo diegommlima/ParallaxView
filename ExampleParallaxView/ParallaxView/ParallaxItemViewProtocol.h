@@ -9,8 +9,8 @@
 @protocol ParallaxItemViewProtocol <NSObject>
 
 @property (nonatomic, assign) NSInteger index;
-@property (nonatomic, strong) UIImageView *backgroundImageView;
+@property (nonatomic, strong) UIView *bgView;
 
-- (CGFloat)imageParallaxVelocity; //0.0f - 1.0f
+- (CGFloat)parallaxVelocity; //0.0f - 1.0f
 
 @end
