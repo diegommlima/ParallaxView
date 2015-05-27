@@ -62,6 +62,10 @@
 
 - (void)reloadData {
 	
+	[self.visiblePages.allObjects makeObjectsPerformSelector:@selector(removeFromSuperview)];
+	[self.recycledPages addObjectsFromArray:self.visiblePages.allObjects];
+	[self.visiblePages removeAllObjects];
+	
 	self.parallaxScrollView.contentSize = [self _contentSizeForPagingScrollView];
 	[self _tilePagesAtPoint:self.parallaxScrollView.contentOffset];
 }
