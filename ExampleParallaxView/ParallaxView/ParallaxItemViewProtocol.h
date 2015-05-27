@@ -11,6 +11,6 @@
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *backgroundImageView;
 
-- (CGFloat)imageOverflowWidth;
+- (CGFloat)imageParallaxVelocity; //0.0f - 1.0f
 
 @end

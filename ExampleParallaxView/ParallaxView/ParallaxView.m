@@ -39,7 +39,7 @@
 		self.parallaxScrollView.showsHorizontalScrollIndicator = NO;
 		[self addSubview:self.parallaxScrollView];
 		
-		self.currentPage = INT_MAX;
+		self.currentPage = 0;
 	}
 	return self;
 }
@@ -207,7 +207,7 @@
 		pageView.clipsToBounds = YES;
 		CGFloat pageOffset = self.parallaxScrollView.contentOffset.x - CGRectGetMinX(pageView.frame);
 		CGFloat percent = ((pageOffset*1)/self.frame.size.width);
-		imgRect.origin.x = [pageView imageOverflowWidth]* percent;
+		imgRect.origin.x = (self.frame.size.width*[pageView imageParallaxVelocity]) * percent;
 	}
 	
 	backgroundView.frame = imgRect;

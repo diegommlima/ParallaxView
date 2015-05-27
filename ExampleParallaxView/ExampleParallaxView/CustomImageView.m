@@ -46,9 +46,9 @@
 	[self.descriptionLabel sizeToFit];
 }
 
-- (CGFloat)imageOverflowWidth {
+- (CGFloat)imageParallaxVelocity {
 	
-	return 120.0f;
+	return 0.25f;
 }
 
 @end

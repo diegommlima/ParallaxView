@@ -32,7 +32,6 @@
 	
 	self.arrayPhotos = @[@"image1.jpg", @"image2.jpg", @"image3.jpg", @"image4.jpg", @"image5.jpg"];
 	[self.parallaxView reloadData];
-	[self.parallaxView selectPageAtIndex:3 animated:NO];
 	
 	UITapGestureRecognizer *singleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizer:)];
 	singleTapGesture.numberOfTapsRequired = 1;
