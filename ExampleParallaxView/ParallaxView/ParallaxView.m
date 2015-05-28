@@ -126,7 +126,7 @@
 
 - (void)_reorganizeViews {
 	
-	[self selectPageAtIndex:self.currentPage animated:YES];
+	[self selectPageAtIndex:self.currentPage animated:NO];
 	
 	for (UIView<ParallaxItemViewProtocol> *page in self.visiblePages) {
 		
