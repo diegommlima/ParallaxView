@@ -12,9 +12,9 @@
 
 @property (nonatomic, strong) NSMutableSet *visiblePages;
 @property (nonatomic, strong) NSMutableSet *recycledPages;
+@property (nonatomic, strong, readwrite) UIScrollView *parallaxScrollView;
 
 @property (nonatomic) NSInteger currentPage;
-@property (nonatomic, strong) UIScrollView *parallaxScrollView;
 
 @end
 
@@ -47,17 +47,17 @@
 -(void)layoutSubviews {
 	
 	[super layoutSubviews];
-
+	
 	self.parallaxScrollView.contentSize = [self _contentSizeForPagingScrollView];
 	[self _reorganizeViews];
 }
 
 - (void)selectPageAtIndex:(NSInteger)index animated:(BOOL)animated{
 	
+	_currentPage = -1;
 	self.currentPage = index;
-	CGPoint newContentOffset = CGPointMake(self.bounds.size.width * index, 0);
-	[self _tilePagesAtPoint:newContentOffset];
-	[self.parallaxScrollView setContentOffset:newContentOffset animated:animated];
+	
+	[self _goToPageAtIndex:self.currentPage animated:animated];
 }
 
 - (void)reloadData {
@@ -102,21 +102,14 @@
 	return nil;
 }
 
-- (NSUInteger)indexOfSelectedPage
-{
-	CGFloat width = self.bounds.size.width;
-	NSUInteger currentPage = (self.parallaxScrollView.contentOffset.x + width/2.0) / width;
-	return currentPage;
-}
-
-#pragma mark - Setters
+#pragma mark - Setters/Getters
 
 - (void)setCurrentPage:(NSInteger)currentPage {
  
 	if (currentPage == _currentPage)
 		return;
 	
-	_currentPage = currentPage;
+	_currentPage = MIN(MAX(currentPage, 0), ([self numberOfPages]-1));
 	
 	if (self.delegate && [self.delegate respondsToSelector:@selector(parallaxView:didChangeToPage:)])
 		[self.delegate parallaxView:self didChangeToPage:_currentPage];
@@ -124,9 +117,23 @@
 
 #pragma mark - Private Methods
 
+- (void)_goToPageAtIndex:(NSInteger)index animated:(BOOL)animated{
+	
+	CGPoint newContentOffset = CGPointMake(self.bounds.size.width * index, 0);
+	[self _tilePagesAtPoint:newContentOffset];
+	[self.parallaxScrollView setContentOffset:newContentOffset animated:animated];
+}
+
+- (NSUInteger)_indexOfSelectedPage {
+	
+	CGFloat width = self.bounds.size.width;
+	NSUInteger selectedPage = (self.parallaxScrollView.contentOffset.x + width/2.0) / width;
+	return selectedPage;
+}
+
 - (void)_reorganizeViews {
 	
-	[self selectPageAtIndex:self.currentPage animated:NO];
+	[self _goToPageAtIndex:self.currentPage animated:NO];
 	
 	for (UIView<ParallaxItemViewProtocol> *page in self.visiblePages) {
 		
@@ -237,7 +244,7 @@
 
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
 	
-	self.currentPage = [self indexOfSelectedPage];
+	self.currentPage = [self _indexOfSelectedPage];
 	
 	if(self.delegate && [self.delegate respondsToSelector:@selector(didFinishParallax:)])
 		[self.delegate didFinishParallax:self];
@@ -245,7 +252,7 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
 	
-	self.currentPage = [self indexOfSelectedPage];
+	self.currentPage = [self _indexOfSelectedPage];
 }
 
 @end

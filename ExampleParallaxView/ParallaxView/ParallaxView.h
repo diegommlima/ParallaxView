@@ -14,11 +14,13 @@
 @interface ParallaxView : UIView
 
 @property (nonatomic, weak) id<ParallaxViewDelegate> delegate;
+@property (nonatomic, strong, readonly) UIScrollView *parallaxScrollView;
 
 - (void)reloadData;
 - (void)selectPageAtIndex:(NSInteger)index animated:(BOOL)animated;
 
 - (UIView<ParallaxItemViewProtocol> *)dequeueReusablePage;
+- (UIView<ParallaxItemViewProtocol> *)selectedPage;
 - (NSUInteger)numberOfPages;
 
 @end
